@@ -1,6 +1,7 @@
 import cbor2
 import httpx
 import json
+import time
 import typing
 from web3.types import TxParams
 
@@ -25,9 +26,14 @@ class RoflUtilityAppd(RoflUtility):
         client = httpx.Client(transport=transport)
 
         url = self.url if self.url and self.url.startswith('http') else "http://localhost"
-        print(f"  Getting {params} from {url+path}")
-        response = client.get(url + path, params=params, timeout=None)
-        response.raise_for_status()
+        while True:
+            print(f"  Getting {params} from {url+path}")
+            response = client.get(url + path, params=params, timeout=None)
+            print(f"  Response: {response.status_code}")
+            if response.is_success:
+                break
+            time.sleep(1)
+
         return response
 
     def _appd_post(self, path: str, payload: typing.Any) -> typing.Any:
@@ -42,9 +48,14 @@ class RoflUtilityAppd(RoflUtility):
         client = httpx.Client(transport=transport)
 
         url = self.url if self.url and self.url.startswith('http') else "http://localhost"
-        print(f"  Posting {json.dumps(payload)} to {url+path}")
-        response = client.post(url + path, json=payload, timeout=None)
-        response.raise_for_status()
+        while True:
+            print(f"  Posting {json.dumps(payload)} to {url+path}")
+            response = client.post(url + path, json=payload, timeout=None)
+            print(f"  Response: {response.status_code}")
+            if response.is_success:
+                break
+            time.sleep(1)
+
         return response
 
     def fetch_appid(self) -> str:
