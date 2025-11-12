@@ -29,7 +29,7 @@ class RoflUtilityAppd(RoflUtility):
         while True:
             print(f"  Getting {params} from {url+path}")
             response = client.get(url + path, params=params, timeout=None)
-            print(f"  Response: {response.status_code}")
+            print(f"  Response: {response.status_code} {response.reason_phrase}")
             if response.is_success:
                 break
             time.sleep(1)
@@ -51,7 +51,7 @@ class RoflUtilityAppd(RoflUtility):
         while True:
             print(f"  Posting {json.dumps(payload)} to {url+path}")
             response = client.post(url + path, json=payload, timeout=None)
-            print(f"  Response: {response.status_code}")
+            print(f"  Response: {response.status_code} {response.reason_phrase}")
             if response.is_success:
                 break
             time.sleep(1)
@@ -81,15 +81,15 @@ class RoflUtilityAppd(RoflUtility):
                 "data": {
                     "gas_limit": tx["gas"],
                     "value": tx["value"],
-                    "data": tx["data"].lstrip("0x"),
+                    "data": tx["data"][2:] if tx["data"].startswith("0x") else tx["data"]
                 },
             },
-            "encrypted": False,
+            "encrypt": False,
         }
 
-        # Contract create transactions don't have "to", others have it.
-        if tx.get("to"):
-            payload["tx"]["data"]["to"] = tx["to"].lstrip("0x")
+        # Contract create transactions don't have "to". For others, include it.
+        if "to" in tx:
+            payload["tx"]["data"]["to"] = tx["to"][2:] if tx["to"].startswith("0x") else tx["to"]
 
         path = '/rofl/v1/tx/sign-submit'
 
