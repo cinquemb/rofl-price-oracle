@@ -81,4 +81,9 @@ contract PriceFeedDirectory {
 
         emit FeedAdded(address(agg), appProviderChainPair);
     }
+
+    function requestFeedUpdate(bytes21 roflAppId, address vault, string[] positionKeys) payable {
+        //TODO: EMIT EVENT THAT DAEMON ON ROFL WILL PICK UP
+        //emit(roflAppId, positionKeys, vault);
+    }
 }

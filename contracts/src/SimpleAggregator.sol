@@ -20,11 +20,14 @@ import { Subcall } from "@oasisprotocol/sapphire-contracts/contracts/Subcall.sol
 
 
 contract SimpleAggregator is RoflAggregatorV3Interface {
-    // Configuration.
-    string public description;
-    uint256 public version;
-    uint8 public decimals;
-    bytes21 private roflAppId;
+    
+
+    struct Position {
+        // Configuration.
+        string public description;
+        uint256 public version;
+        uint8 public decimals;
+    }
 
     // Observations.
     struct Observation {
@@ -34,8 +37,10 @@ contract SimpleAggregator is RoflAggregatorV3Interface {
         uint256 updatedAt; // The timestamp when the answer was computed.
     }
 
+    mapping(bytes20 => Position) PositionConfig;
+
     //mapping(uint80 => Observation) public observations;
-    mapping(bytes21 => mapping(address => mapping(string => mapping(uint80 => Observation)))) public observations; //roflAppID => vault addr => position name => observations
+    mapping(bytes21 => mapping(address => mapping(bytes20 => mapping(uint80 => Observation)))) public observations; //roflAppID => vault addr => positionKey => observations
     
     uint80 public latestRoundId;
 
