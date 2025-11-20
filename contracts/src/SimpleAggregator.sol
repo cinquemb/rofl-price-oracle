@@ -4,6 +4,21 @@ pragma solidity 0.8.24;
 import { RoflAggregatorV3Interface } from "./RoflAggregatorV3Interface.sol";
 import { Subcall } from "@oasisprotocol/sapphire-contracts/contracts/Subcall.sol";
 
+
+/*
+
+- modofy orical contract storage 
+        - to be able to store nav method calculated vaulue mapped to:
+            - oiv addr + safe addr + protocol
+        - trigger nav update
+            - emit event that will be pickeck up by rofl with the corressponding oiv addr + safe addr + protocol pos
+    
+    - modigy oracle contract getter
+        - query value by oiv addr + safe addr + protocol pos
+
+*/
+
+
 contract SimpleAggregator is RoflAggregatorV3Interface {
     // Configuration.
     string public description;
@@ -19,7 +34,9 @@ contract SimpleAggregator is RoflAggregatorV3Interface {
         uint256 updatedAt; // The timestamp when the answer was computed.
     }
 
-    mapping(uint80 => Observation) public observations;
+    //mapping(uint80 => Observation) public observations;
+    mapping(bytes21 => mapping(address => mapping(string => mapping(uint80 => Observation)))) public observations; //roflAppID => vault addr => position name => observations
+    
     uint80 public latestRoundId;
 
     // Checks whether the transaction was signed by the ROFL's app key inside
